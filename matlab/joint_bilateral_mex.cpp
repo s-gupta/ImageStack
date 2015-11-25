@@ -29,7 +29,7 @@ Image fromMat(const mxArray *mxfeat){
 
   Image im(width, height, frames, channels);
 
-  float *dstPtr = im(0, 0, 0);
+  float *dstPtr = &im(0, 0, 0);
   float *srcPtr = feat;
   for (int i = 0; i < size; i++) {
     *dstPtr++ = (float)(*srcPtr++);
@@ -38,7 +38,7 @@ Image fromMat(const mxArray *mxfeat){
 }
 
 
-mxArray* toMat(Window im) { 
+mxArray* toMat(Image im) { 
   int size = im.width * im.height * im.channels * im.frames;
   int out[4];
   out[0] = im.frames;
@@ -48,7 +48,7 @@ mxArray* toMat(Window im) {
   mxArray *mxfeat = mxCreateNumericArray(4, out, mxSINGLE_CLASS, mxREAL);
   float *feat = (float *)mxGetPr(mxfeat);
   
-  float *srcPtr = im(0, 0, 0);
+  float *srcPtr = &im(0, 0, 0);
   for (int i = 0; i < size; i++) {
     *feat++ = (float)(*srcPtr++);
   }
