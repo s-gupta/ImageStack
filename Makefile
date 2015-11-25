@@ -1,7 +1,7 @@
 # MATLAB_ROOT_DIR=/usr/sww/pkg/matlab-r2012b/
 MATLAB_ROOT_DIR=/opt/matlab-r2014b/
 
-BIN_CCFLAGS = -std=gnu++0x -O3 -Winvalid-pch -Wshadow -Wall -Werror -Wno-uninitialized -pipe -march=native -ffast-math -fopenmp -rdynamic -I /usr/local/include 
+BIN_CCFLAGS = -std=gnu++0x -O3 -Winvalid-pch -Wshadow -Wall -Werror -Wno-uninitialized -pipe -march=native -ffast-math -rdynamic -I /usr/local/include 
 # BIN_CCFLAGS = -O3 -Winvalid-pch -Wall -pipe -fno-strict-aliasing -fomit-frame-pointer -fexpensive-optimizations -falign-functions=4 -funroll-loops -fprefetch-loop-arrays -march=nocona -msse3 -mfpmath=sse -Wno-uninitialized -I /usr/local/include
 
 LIB_CCFLAGS = $(BIN_CCFLAGS) -fPIC
