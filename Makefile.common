@@ -60,10 +60,10 @@ OPENEXR_CCFLAGS ?= -DNO_OPENEXR
 # Top-level targets      #
 ##########################
 
-all: $(BIN_TARGET) library
+all: $(BIN_TARGET) library joint_bilateral_mex
 
 clean:
-	-rm -f $(BIN_TARGET) lib/*.* bin/build/*.* lib/build/*.* include/*.*
+	-rm -f $(BIN_TARGET) lib/*.* bin/build/*.* lib/build/*.* include/*.* matlab/*.mexa64
 
 ##########################
 # ImageStack the program #
@@ -94,13 +94,17 @@ $(LIB_TARGET): IMAGESTACK_CCFLAGS = $(LIB_CCFLAGS) -DNO_MAIN $(SDL_CCFLAGS) $(JP
 $(LIB_TARGET): IMAGESTACK_LIBS = $(JPEG_LIBS) $(TIFF_LIBS) $(PNG_LIBS) $(FFTW_LIBS) $(OPENEXR_LIBS) -ldl
 LIB_OBJECTS = $(foreach f,$(IMAGESTACK_OBJECTS),lib/build/$f)
 
-library: $(LIB_TARGET) include/ImageStack.h
+library: $(LIB_TARGET) include/ImageStack.h $(LIB_TARGET_MATLAB)
 
 lib/build/main.h.gch: src/main.h
 	$(CXX) $(IMAGESTACK_CCFLAGS) -x c++-header -O3 -o lib/build/main.h.gch src/main.h
 
 $(LIB_TARGET): $(LIB_OBJECTS)
 	$(CXX) $(LIB_FLAGS) $(LIB_OBJECTS) -o $(LIB_TARGET) $(IMAGESTACK_LIBS)
+
+$(LIB_TARGET_MATLAB): $(LIB_OBJECTS)
+	ar rcs $(LIB_TARGET_MATLAB) $(LIB_OBJECTS)
+
 
 include/ImageStack.h: src/ImageStack.h
 	cp src/*.h include
@@ -116,3 +120,11 @@ STYLE_OPTS = --indent=spaces=4 --brackets=attach --indent-labels --indent-prepro
 
 style:
 	astyle $(STYLE_OPTS) `find . -name '[A-Za-z]*.h'` `find . -name '[A-Za-z]*.cpp'`
+
+
+
+##################
+# matlab wrapper #
+##################
+joint_bilateral_mex: $(LIB_TARGET_MATLAB) matlab/joint_bilateral_mex.cpp
+	$(MATLAB_ROOT_DIR)/bin/mex matlab/joint_bilateral_mex.cpp CXX="g++" CXXFLAGS="\$$CXXFLAGS $(IMAGESTACK_CCFLAGS) -Iinclude/ -fPIC " CXXLIBS="\$$CXXLIBS $(LIB_TARGET_MATLAB)" -output matlab/joint_bilateral_mex.mexa64
